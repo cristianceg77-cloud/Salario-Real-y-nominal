@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poder adquisitivo docente por provincia – Argentina 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Literata:opsz,wght@7..72,400;7..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F3F6F9; --surface:#FFFFFF; --ink:#16243A; --muted:#566781; --line:#D6DEE8;
+  --nominal:#E3A23B; --real:#1E4E8C; --celeste:#5FA8DC; --up:#1E7A5A; --down:#C0632A;
+  --nodata:#E3E8EE; --soft:#EAF2FA;
+  --sans:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --serif:"Literata", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1622; --surface:#152032; --ink:#E7EEF7; --muted:#9BAAC0; --line:#27364D;
+    --nominal:#F0B65A; --real:#8EBBEF; --celeste:#7DBEEA; --up:#5CC79E; --down:#F0915A;
+    --nodata:#22304A; --soft:#1A2A42;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1622; --surface:#152032; --ink:#E7EEF7; --muted:#9BAAC0; --line:#27364D;
+  --nominal:#F0B65A; --real:#8EBBEF; --celeste:#7DBEEA; --up:#5CC79E; --down:#F0915A;
+  --nodata:#22304A; --soft:#1A2A42;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--celeste);outline-offset:2px}
+
+/* Encabezado */
+header.top{padding:40px 0 18px;border-bottom:4px solid var(--ink)}
+.flag{display:flex;gap:6px;margin-bottom:18px}
+.flag span{width:34px;height:6px;border-radius:3px;background:var(--celeste)}
+.flag span:nth-child(2){background:var(--surface);border:1px solid var(--line)}
+h1{font-stretch:78%;font-weight:800;font-size:clamp(2rem,5.4vw,3.7rem);line-height:1.02;letter-spacing:-.01em;margin:0 0 14px;max-width:16ch}
+.lede{font-family:var(--serif);font-size:1.12rem;line-height:1.6;color:var(--muted);max-width:62ch;margin:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.btn{border:1.5px solid var(--ink);background:transparent;border-radius:999px;padding:7px 15px;cursor:pointer;font-weight:600;font-size:.92rem}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* Vistazo y navegación */
+.eyebrow{font-stretch:90%;font-weight:700;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--celeste);margin:0 0 6px}
+.secnav{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:18px;font-size:.9rem}
+.secnav a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}
+.secnav a:hover{color:var(--ink);border-color:var(--ink)}
+.glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:24px}
+.glance > div{background:var(--surface);padding:14px 16px}
+.glance small{display:block;color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.glance b{display:block;font-stretch:78%;font-weight:800;font-size:1.65rem;line-height:1.1;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.glance span{font-size:.85rem;color:var(--muted)}
+/* Filtros */
+.filters{box-shadow:0 8px 14px -12px rgba(0,0,0,.3);position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 0}
+.filters .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+.fgroup{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.fgroup > b{font-weight:700;font-size:.9rem;margin-right:4px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.9rem}
+.chip[aria-pressed="true"]{background:var(--real);border-color:var(--real);color:var(--surface)}
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;font-size:.92rem;max-width:100%}
+
+/* Secciones */
+section.block{padding:34px 0 10px}
+.grid2{display:grid;grid-template-columns:1fr;gap:10px 40px}
+@media(min-width:960px){.grid2{grid-template-columns:1.25fr 1fr}}
+h2{font-stretch:88%;font-weight:750;font-size:1.65rem;line-height:1.15;margin:0 0 6px}
+h3{font-weight:700;font-size:1.05rem;margin:18px 0 6px}
+.explica{font-family:var(--serif);color:var(--muted);font-size:1rem;line-height:1.65;max-width:64ch;margin:0 0 16px}
+.explica strong{color:var(--ink);font-weight:600}
+details.como{font-family:var(--serif);font-size:.95rem;color:var(--muted);border-left:3px solid var(--celeste);padding:4px 0 4px 14px;margin:10px 0 18px;max-width:64ch}
+details.como summary{cursor:pointer;font-family:var(--sans);font-weight:600;color:var(--ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(22,36,58,.04),0 10px 28px -16px rgba(22,36,58,.18)}
+@media(max-width:700px){.filters{position:static}.panel{padding:14px}}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.88rem;color:var(--muted);margin-bottom:8px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.empty{padding:28px 10px;text-align:center;color:var(--muted);font-family:var(--serif)}
+
+/* Brecha */
+.gap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.gap .g{border-top:3px solid var(--nominal);padding-top:8px}
+.gap .g.r{border-top-color:var(--real)}
+.gap .big{font-stretch:75%;font-weight:800;font-size:2.4rem;line-height:1}
+.gap small{display:block;color:var(--muted);font-size:.85rem;margin-top:4px}
+.insight{background:var(--soft);border-radius:10px;padding:12px 14px;font-family:var(--serif);margin-top:14px}
+
+/* Mapa */
+.mapwrap{max-width:430px;margin:0 auto}
+.tile{cursor:pointer}
+.tile:focus{outline:none}
+.tile:focus-visible rect{stroke:var(--ink);stroke-width:3}
+.scale{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);margin-top:10px}
+.scale .bar{flex:1;height:10px;border-radius:5px;background:linear-gradient(90deg,#D98A2B,#EEF2F6,#1E4E8C)}
+.info{margin-top:14px;min-height:92px}
+.info dl{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:6px 0 0;font-size:.95rem}
+.info dt{color:var(--muted)}
+.info dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* Simulador */
+.simgrid{display:grid;grid-template-columns:1fr;gap:22px}
+@media(min-width:900px){.simgrid{grid-template-columns:340px 1fr}}
+.ctl{margin-bottom:18px}
+.ctl label{display:flex;justify-content:space-between;font-weight:600;font-size:.95rem;margin-bottom:6px}
+.ctl output{font-stretch:80%;font-weight:800;font-size:1.3rem;color:var(--real)}
+input[type=range]{width:100%;accent-color:var(--real)}
+.headline{font-stretch:82%;font-weight:750;font-size:1.35rem;line-height:1.25;margin:0 0 12px}
+.tbl{width:100%;border-collapse:collapse;font-size:.93rem;font-variant-numeric:tabular-nums}
+.tbl th{text-align:left;font-weight:600;color:var(--muted);border-bottom:2px solid var(--line);padding:7px 8px;white-space:nowrap}
+.tbl td{border-bottom:1px solid var(--line);padding:8px}
+.tbl td.num,.tbl th.num{text-align:right}
+.pos{color:var(--up);font-weight:700}.neg{color:var(--down);font-weight:700}
+.scroll{overflow-x:auto}
+
+/* Datos */
+.data input[type=number]{width:130px;border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:5px 7px;text-align:right}
+.data .add{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.notice{border-left:4px solid var(--nominal);background:var(--soft);padding:10px 14px;border-radius:0 8px 8px 0;font-family:var(--serif);margin:0 0 16px;max-width:72ch}
+.hist-ctl{display:flex;flex-wrap:wrap;gap:12px 26px;margin-bottom:14px;align-items:center}
+.trend{display:inline-block;padding:5px 14px;border-radius:999px;font-weight:750;font-size:1rem;border:2px solid currentColor}
+.trend.up{color:var(--up)}.trend.flat{color:var(--muted)}.trend.down{color:var(--down)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 18px;margin:14px 0 6px}
+.kpis div{border-top:3px solid var(--line);padding-top:6px;font-size:.88rem;color:var(--muted)}
+.kpis b{display:block;font-stretch:78%;font-weight:800;font-size:1.45rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.summary{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+@media(min-width:760px){.summary{grid-template-columns:1fr 1fr 1fr}}
+.summary > div{background:var(--soft);border-radius:10px;padding:12px 14px;font-family:var(--serif);font-size:.96rem}
+.summary h3{font-family:var(--sans);margin:0 0 4px;font-size:.95rem}
+.summary ul{margin:4px 0 0;padding-left:18px}
+textarea{width:100%;min-height:120px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:10px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+.linkbtn{background:none;border:none;color:var(--down);cursor:pointer;text-decoration:underline;padding:0}
+footer{padding:30px 0 50px;color:var(--muted);font-size:.88rem;font-family:var(--serif)}
+
+/* Modo presentación */
+body.pres{font-size:19px}
+body.pres .solo-edicion,body.pres details.como{display:none}
+body.pres h1{font-size:clamp(2.4rem,6vw,4.4rem)}
+@media (prefers-reduced-motion: no-preference){
+  .bar-anim{transition:width .35s ease}
+}
+@media print{.filters,.toolbar,.solo-edicion{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="flag" aria-hidden="true"><span></span><span></span><span></span></div>
+    <h1>Poder adquisitivo docente por provincia – Argentina 2026</h1>
+    <p class="lede">Cobrar más no siempre significa poder comprar más. Este tablero compara lo que dice el recibo (salario nominal) con lo que ese sueldo rinde en cada provincia según su costo de vida (salario real).</p>
+    <div class="toolbar">
+      <button class="btn" id="btnPres" aria-pressed="false">Modo presentación</button>
+      <button class="btn" id="btnTheme" aria-pressed="false">Tema oscuro</button>
+    </div>
+    <div class="glance" id="glance" aria-live="polite"></div>
+    <nav class="secnav" aria-label="Secciones">
+      <a href="#sec-ranking">Ranking</a><a href="#sec-barras">Nominal vs. real</a><a href="#sec-mapa">Mapa</a><a href="#sec-sim">Simulador</a><a href="#sec-hist">Serie histórica</a><a href="#sec-datos">Datos y fuentes</a>
+    </nav>
+  </div>
+</header>
+
+<!-- 3. Panel de filtros -->
+<nav class="filters" aria-label="Filtros">
+  <div class="wrap">
+    <div class="fgroup" role="group" aria-label="Región">
+      <b>Región</b>
+      <span id="regionChips"></span>
+    </div>
+    <div class="fgroup">
+      <b><label for="cargoSel">Cargo</label></b>
+      <select id="cargoSel"></select>
+    </div>
+    <div class="fgroup" role="group" aria-label="Fuente de datos">
+      <b>Datos</b>
+      <button class="chip" data-ds="oficial" aria-pressed="true">Oficiales</button>
+      <button class="chip" data-ds="autor" aria-pressed="false">Con datos del autor</button>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 4. Brecha y ranking -->
+  <section class="block" id="sec-ranking">
+    <p class="eyebrow">01 · Ranking y brecha</p>
+    <h2>El ranking cambia cuando se descuenta el costo de vida</h2>
+    <p class="explica">A la izquierda, las provincias ordenadas por lo que cobra un docente. A la derecha, por lo que <strong>ese sueldo puede comprar</strong>. Una línea que sube indica una provincia que gana posiciones al ajustar por costo de vida; una que baja, una provincia donde el sueldo alto se diluye en precios altos.</p>
+    <div class="panel">
+      <div class="chart" id="slope"></div>
+      <div class="gap" id="gap"></div>
+      <div class="insight" id="slopeInsight"></div>
+    </div>
+    <details class="como"><summary>¿Cómo se mide la brecha?</summary>
+      <p>La brecha es el cociente entre el salario más alto y el más bajo de las provincias visibles. Si vale 2,0, el docente mejor pago cobra el doble que el peor pago. Comparar la brecha nominal con la real muestra cuánto de la desigualdad “se achica” (o se agranda) cuando se consideran los precios de cada lugar.</p>
+    </details>
+  </section>
+
+  <div class="grid2">
+    <!-- 1. Barras nominal vs real -->
+    <section class="block" id="sec-barras">
+      <p class="eyebrow">02 · Comparación por provincia</p>
+    <h2>Nominal contra real</h2>
+      <p class="explica">Cada provincia tiene dos barras: la dorada es el salario del recibo y la azul es su equivalente en poder de compra. Cuando la azul es <strong>más larga</strong> que la dorada, la provincia es más barata que la referencia; cuando es más corta, más cara.</p>
+      <div class="panel">
+        <div class="legend">
+          <span><i style="background:var(--nominal)"></i>Salario nominal</span>
+          <span><i style="background:var(--real)"></i>Salario real</span>
+          <span id="legSim" hidden><i style="background:transparent;border:1.5px dashed var(--real)"></i>Real simulado</span>
+        </div>
+        <div class="fgroup" style="margin-bottom:8px">
+          <b>Ordenar por</b>
+          <button class="chip" data-sort="real" aria-pressed="true">Real</button>
+          <button class="chip" data-sort="nominal" aria-pressed="false">Nominal</button>
+        </div>
+        <div class="chart" id="bars"></div>
+      </div>
+    </section>
+
+    <!-- 2. Mapa de calor -->
+    <section class="block" id="sec-mapa">
+      <p class="eyebrow">03 · Mapa de calor</p>
+    <h2>Mapa del poder adquisitivo</h2>
+      <p class="explica">Cada casilla es una jurisdicción, ubicada de forma esquemática según su posición en el país. El color compara el salario real con el <strong>promedio simple de las 24 jurisdicciones</strong>: azul por encima, ocre por debajo. Tocá una casilla para ver el detalle.</p>
+      <div class="panel">
+        <div class="fgroup" style="margin-bottom:6px">
+          <b>Mostrar</b>
+          <button class="chip" data-map="hoy" aria-pressed="true">Hoy</button>
+          <button class="chip" data-map="sim" aria-pressed="false">Con simulación</button>
+        </div>
+        <div class="mapwrap chart" id="map"></div>
+        <div class="scale mapwrap"><span>−40%</span><div class="bar"></div><span>+40%</span></div>
+        <div class="info" id="mapInfo"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 5. Simulador -->
+  <section class="block" id="sec-sim">
+    <p class="eyebrow">04 · Simulador</p>
+    <h2>Simulador de aumentos</h2>
+    <p class="explica">Probá un aumento salarial y una inflación esperada. El poder adquisitivo sólo mejora si el aumento <strong>le gana a la inflación</strong>: la variación real es (1 + aumento) ÷ (1 + inflación) − 1.</p>
+    <div class="panel simgrid">
+      <div>
+        <div class="ctl">
+          <label for="rngA">Aumento salarial <output id="outA">0%</output></label>
+          <input type="range" id="rngA" min="0" max="150" step="1" value="0">
+        </div>
+        <div class="ctl">
+          <label for="rngP">Inflación del período <output id="outP">0%</output></label>
+          <input type="range" id="rngP" min="0" max="150" step="1" value="0">
+        </div>
+        <div class="ctl">
+          <label for="alcance">Aplicar el aumento a</label>
+          <select id="alcance" style="width:100%"></select>
+        </div>
+        <button class="btn" id="simReset">Volver a cero</button>
+      </div>
+      <div>
+        <p class="headline" id="simHeadline"></p>
+        <div class="scroll"><table class="tbl" id="simTable"></table></div>
+        <details class="como"><summary>¿Qué es “para llegar al promedio”?</summary>
+          <p>Es el aumento nominal que necesitaría cada provincia, con la inflación elegida, para que su salario real iguale al promedio actual de las provincias cargadas. Si aparece “ya supera”, la provincia está por encima del promedio incluso después de la inflación.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Serie histórica -->
+  <section class="block" id="sec-hist">
+    <p class="eyebrow">05 · Evolución en el tiempo</p>
+    <h2>Serie histórica del poder adquisitivo docente (2010–2026)</h2>
+    <p class="explica">La línea dorada punteada es lo que figura en el recibo en cada momento; la azul es ese mismo sueldo expresado en <strong>pesos de junio de 2026</strong>, es decir, descontando la inflación acumulada desde entonces. Si la azul baja, el sueldo compra menos que antes aunque la dorada suba.</p>
+    <p class="notice" id="histNotice"></p>
+    <div class="panel">
+      <div class="hist-ctl">
+        <div class="fgroup"><b><label for="hProv">Provincia</label></b><select id="hProv"></select></div>
+        <div class="fgroup"><b><label for="hCargo">Cargo</label></b><select id="hCargo"></select></div>
+        <div class="fgroup" role="group" aria-label="Ajuste"><b>Ajuste</b>
+          <button class="chip" data-haj="ipc" aria-pressed="true">Inflación INDEC</button>
+          <button class="chip" data-haj="col" aria-pressed="false">Inflación + costo de vida regional</button></div>
+        <div class="fgroup" role="group" aria-label="Comparar con"><b>Comparar con</b>
+          <button class="chip" data-hcomp="nacional" aria-pressed="true">Promedio nacional</button>
+          <button class="chip" data-hcomp="region" aria-pressed="false">Promedio de su región</button></div>
+        <label class="fgroup" style="font-size:.92rem"><input type="checkbox" id="hNom" checked> Mostrar nominal</label>
+      </div>
+      <div class="legend" id="hLegend"></div>
+      <div class="chart" id="histChart"></div>
+      <div class="kpis" id="hKpis"></div>
+      <div class="summary" id="hSummary"></div>
+      <details class="como"><summary>¿Cómo se calcula?</summary>
+        <p>Real (inflación INDEC) = nominal × IPC de junio 2026 ÷ IPC del mes. Con “costo de vida regional” además se divide por el índice de la región (GBA = 1), así las provincias quedan comparables entre sí. La tendencia compara el primer y el último dato: más de +5% es crecimiento real, menos de −5% es pérdida, y en el medio, estancamiento. Se marcan como saltos abruptos los cambios reales de ±15% o más entre dos datos consecutivos.</p>
+      </details>
+      <details class="como solo-edicion" id="hImport"><summary>Cargar años anteriores (2010–2023)</summary>
+        <p>Pegá una fila por dato con el formato <code>AAAA-MM;CÓDIGO;valor</code>. CÓDIGO es la sigla de la provincia (NQN, RNG, CABA, BUE…) o <code>IPC</code> para el índice de precios. El IPC de diciembre de 2016 a 2023 ya está cargado: si importás salarios de diciembre de esos años no hace falta agregar IPC. Para otros meses, o antes de 2016, sumá filas <code>IPC</code> e incluí el de <code>2023-12</code> para empalmar. Fuente sugerida para salarios: planilla “Salario Bruto MG10” de la Secretaría de Educación (argentina.gob.ar, Series de salario docente). Para 2010–2016 no hay IPC nacional del INDEC: usá un índice provincial (CABA, San Luis) y aclaralo al presentar.</p>
+        <textarea id="hText" placeholder="2016-12;RNG;15230&#10;2017-12;RNG;19870&#10;2016-12;NQN;..."></textarea>
+        <p><button class="btn" id="hImpBtn">Importar datos</button> <button class="linkbtn" id="hClear">Borrar datos importados</button> <span id="hMsg" style="margin-left:8px"></span></p>
+      </details>
+    </div>
+  </section>
+
+  <!-- Datos y supuestos -->
+  <section class="block solo-edicion" id="sec-datos">
+    <p class="eyebrow">06 · Datos y fuentes</p>
+    <h2>Datos y supuestos</h2>
+    <p class="explica"><strong>Nominal:</strong> salario bruto de un maestro de grado de jornada simple con 10 años de antigüedad (MG10), junio 2026, según el Informe Indicativo del Salario Docente de la Secretaría de Educación de la Nación. <strong>Costo de vida:</strong> canasta básica total regional del INDEC (promedio del 2º semestre 2025) dividida por la del Gran Buenos Aires. El salario real se expresa en “pesos del Gran Buenos Aires”: cuánto habría que cobrar en GBA para comprar lo mismo. Podés corregir cifras; los cambios se guardan en este navegador.</p>
+      <p class="explica">Límites: el índice es regional (todas las provincias de una misma región comparten valor), la canasta del INDEC está pensada para medir pobreza y no el consumo típico de un docente, y el informe usa salario bruto sin los adicionales específicos de cada provincia.</p>
+    <div class="panel data">
+      <div class="scroll"><table class="tbl" id="dataTable"></table></div>
+      <div class="add">
+        <select id="addSel" aria-label="Provincia para agregar"></select>
+        <input type="number" id="addNom" placeholder="Nominal" aria-label="Salario nominal">
+        <input type="number" id="addReal" placeholder="Real" aria-label="Salario real">
+        <button class="btn" id="addBtn">Agregar provincia</button>
+      </div>
+      <h3>Otros cargos</h3>
+      <p class="explica" style="margin-bottom:4px">MI10, director/a de primaria y profesor/a con 15 horas cátedra se calculan con la relación oficial de cada provincia respecto del MG10 (anexo del informe de septiembre 2025). El MG0 surge de los salarios brutos MG0 y MG10 publicados por provincia para esa misma fecha. Esas relaciones se aplican a toda la serie, por lo que para fechas lejanas son una aproximación.</p>
+      <h3>Datos del autor</h3>
+      <p class="explica">Con el filtro “Con datos del autor”, Neuquén, Río Negro, Formosa, CABA y Mendoza usan las cifras cargadas originalmente (nominal y costo de vida 130, 115, 85, 120 y 95). Río Negro, Formosa y CABA no coinciden con el informe oficial de junio 2026.</p>
+      <p style="margin-top:14px"><button class="linkbtn" id="resetAll">Restaurar datos originales</button></p>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  Fuentes: Secretaría de Educación de la Nación, Informe Indicativo del Salario Docente (diciembre 2024, septiembre 2025 y junio 2026; salario bruto MG10 y relaciones entre cargos); INDEC, Índice de precios al consumidor (variaciones mensuales y anuales, total nacional); INDEC, Incidencia de la pobreza y la indigencia, 2º semestre 2025 (canastas básicas totales regionales). Salario real = nominal ÷ índice de costo de vida regional (GBA = 1). Los rankings y brechas se calculan sobre las provincias visibles.
+</footer>
+
+<script>
+(function(){
+/* ---------- Datos fijos ---------- */
+const PROV = [
+  {id:'JUJ',n:'Jujuy',c:'Jujuy',r:'NOA',x:1,y:0},{id:'SAL',n:'Salta',c:'Salta',r:'NOA',x:2,y:0},
+  {id:'FOR',n:'Formosa',c:'Formosa',r:'NEA',x:3,y:0},{id:'MIS',n:'Misiones',c:'Misiones',r:'NEA',x:5,y:0},
+  {id:'CAT',n:'Catamarca',c:'Catamarca',r:'NOA',x:1,y:1},{id:'TUC',n:'Tucumán',c:'Tucumán',r:'NOA',x:2,y:1},
+  {id:'CHA',n:'Chaco',c:'Chaco',r:'NEA',x:3,y:1},{id:'COR',n:'Corrientes',c:'Corrientes',r:'NEA',x:4,y:1},
+  {id:'LRI',n:'La Rioja',c:'La Rioja',r:'NOA',x:1,y:2},{id:'SDE',n:'Santiago del Estero',c:'Sgo. del Estero',r:'NOA',x:2,y:2},
+  {id:'SFE',n:'Santa Fe',c:'Santa Fe',r:'Centro',x:3,y:2},{id:'ERI',n:'Entre Ríos',c:'Entre Ríos',r:'Centro',x:4,y:2},
+  {id:'SJU',n:'San Juan',c:'San Juan',r:'Cuyo',x:1,y:3},{id:'CBA',n:'Córdoba',c:'Córdoba',r:'Centro',x:2,y:3},
+  {id:'BUE',n:'Buenos Aires',c:'Bs. As.',r:'Centro',x:3,y:3},{id:'CABA',n:'Ciudad de Buenos Aires',c:'CABA',r:'Centro',x:4,y:3},
+  {id:'MZA',n:'Mendoza',c:'Mendoza',r:'Cuyo',x:1,y:4},{id:'SLU',n:'San Luis',c:'San Luis',r:'Cuyo',x:2,y:4},
+  {id:'NQN',n:'Neuquén',c:'Neuquén',r:'Patagonia',x:1,y:5},{id:'LPA',n:'La Pampa',c:'La Pampa',r:'Centro',x:2,y:5},
+  {id:'RNG',n:'Río Negro',c:'Río Negro',r:'Patagonia',x:2,y:6},{id:'CHU',n:'Chubut',c:'Chubut',r:'Patagonia',x:2,y:7},
+  {id:'SCR',n:'Santa Cruz',c:'Santa Cruz',r:'Patagonia',x:2,y:8},{id:'TDF',n:'Tierra del Fuego',c:'T. del Fuego',r:'Patagonia',x:3,y:9}
+];
+const REGIONES = {'Todas':null,'Patagonia':['Patagonia'],'Norte':['NEA','NOA'],'Centro':['Centro'],'Cuyo':['Cuyo'],'NEA':['NEA'],'NOA':['NOA']};
+const CARGOS = [
+  {id:'MG0',n:'Maestro/a de grado sin antigüedad (MG0)'},
+  {id:'MG10',n:'Maestro/a de grado, 10 años (MG10)'},
+  {id:'MI',n:'Maestro/a de inicial, 10 años (MI10)'},
+  {id:'HC',n:'Profesor/a secundaria, 15 horas cátedra'},
+  {id:'DIR',n:'Director/a de primaria, 10 años'}
+];
+/* Relación con el MG10 por provincia: [MG0, MI10, DIR PRIM10, 15HC SEC10] — Informe indicativo, septiembre 2025 */
+const RATIOS = {BUE:[.896,1,1.39,.67],CAT:[.934,1.01,1.57,1],CHA:[.855,1.02,1.15,.93],CHU:[.891,1,2.12,.73],
+  CABA:[.816,1,2.43,.78],CBA:[.919,1,1.46,.70],COR:[.916,1,1.40,.95],ERI:[.863,1.01,1.45,.71],FOR:[.923,1,1.21,1],
+  JUJ:[.925,1,1.69,.79],LPA:[.956,1,1.97,.98],LRI:[.946,1,1.24,.95],MZA:[.975,1,1.80,.80],MIS:[.934,1.03,1.31,1],
+  NQN:[.880,1.01,2.07,.78],RNG:[.945,1,2.43,.92],SAL:[.605,1.07,1.49,.63],SJU:[.763,1,1.54,.94],SLU:[.892,1.01,1.74,1],
+  SCR:[.886,1,2.35,.84],SFE:[.910,1,1.95,.53],SDE:[.967,1,1.38,1.07],TDF:[.948,1,2.71,.73],TUC:[.977,1.01,1.42,1]};
+const ratioOf = (id,c) => c==='MG10' ? 1 : RATIOS[id][{MG0:0,MI:1,DIR:2,HC:3}[c]];
+/* Datos cargados por el autor del tablero */
+const AUTHOR = {NQN:{nominal:2521570,icv:1.30},RNG:{nominal:1400000,icv:1.15},FOR:{nominal:1250000,icv:0.85},CABA:{nominal:980000,icv:1.20},MZA:{nominal:935450,icv:0.95}};
+/* Salario bruto MG10, junio 2026 — Informe Indicativo del Salario Docente, Secretaría de Educación de la Nación */
+const NOMINAL = {NQN:2521569.91,SDE:1893191.25,SCR:1872714.69,TDF:1612133.04,CBA:1612064.15,RNG:1495299.78,
+  COR:1468200.01,LPA:1434457.80,SJU:1418350.50,SFE:1404667.32,CABA:1394542.46,SAL:1299399.52,CHA:1285066.82,
+  CHU:1217455.59,FOR:1208336.55,BUE:1183892.02,SLU:1167209.25,TUC:1135994.44,JUJ:1126146.18,ERI:1073056.69,
+  CAT:1043648.15,LRI:1039879.75,MIS:988279.14,MZA:935449.89};
+/* Canasta básica total regional por adulto equivalente, promedio 2º sem. 2025 — INDEC, EPH pobreza (marzo 2026) */
+const CBT = {GBA:391953.94,Pampeana:386197.20,Cuyo:372231.85,NEA:327913.17,NOA:315498.36,Patagonia:457805.40};
+const priceRegion = p => (p.id==='CABA'||p.id==='BUE') ? 'GBA' : p.r==='Centro' ? 'Pampeana' : p.r;
+const icvOf = p => CBT[priceRegion(p)]/CBT.GBA;
+const DEFAULT_DATA = {};
+const KEY='docentes2026:v2';
+const byId = Object.fromEntries(PROV.map(p=>[p.id,p]));
+PROV.forEach(p=>{DEFAULT_DATA[p.id]={nominal:Math.round(NOMINAL[p.id]),real:Math.round(NOMINAL[p.id]/icvOf(p))};});
+
+/* ---------- Estado ---------- */
+function load(){
+  try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.data) return s;}catch(e){}
+  return {data:JSON.parse(JSON.stringify(DEFAULT_DATA))};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({data:state.data}));}catch(e){}}
+const saved = load();
+const state = {region:'Todas',cargo:'MG10',aumento:0,inflacion:0,alcance:'todas',sort:'real',mapMode:'hoy',sel:null,
+  data:saved.data,dataset:'oficial'};
+
+/* ---------- Utilidades ---------- */
+const $ = s=>document.querySelector(s);
+const fmt = n=>'$ '+Math.round(n).toLocaleString('es-AR');
+const fmtM = n=> n>=1e6 ? '$ '+(n/1e6).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})+' M' : '$ '+Math.round(n/1e3).toLocaleString('es-AR')+' mil';
+const pct = (x,d=1)=>(x>0?'+':'')+(x*100).toLocaleString('es-AR',{maximumFractionDigits:d})+'%';
+const num = (x,d=2)=>x.toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const css = v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const simActive = ()=> state.aumento!==0 || state.inflacion!==0;
+function inRegion(p){const r=REGIONES[state.region];return !r||r.includes(p.r);}
+
+function allRows(){
+  const pi=state.inflacion/100;
+  return PROV.filter(p=>state.data[p.id]).map(p=>{
+    const d=state.data[p.id], au=state.dataset==='autor'&&AUTHOR[p.id];
+    const icv=au?au.icv:d.nominal/d.real, nominal=(au?au.nominal:d.nominal)*ratioOf(p.id,state.cargo), real=nominal/icv;
+    const a=(state.alcance==='todas'||state.alcance===p.id)?state.aumento/100:0;
+    const nomSim=nominal*(1+a), realSim=nomSim/(icv*(1+pi));
+    return {...p,icv,nominal,real,nomSim,realSim,a,vis:inRegion(p),src:au?'autor':'indec'};
+  });
+}
+const visRows = ()=>allRows().filter(r=>r.vis);
+const avgReal = rows=> rows.length? rows.reduce((s,r)=>s+r.real,0)/rows.length : 0;
+function emptyMsg(t){return `<div class="empty">${t}</div>`;}
+function niceStep(v){const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<1.5?1:m<3.5?2.5:m<7.5?5:10)*p;}
+
+/* ---------- 3. Filtros ---------- */
+function buildFilters(){
+  $('#regionChips').innerHTML = Object.keys(REGIONES).map(r=>`<button class="chip" data-region="${r}" aria-pressed="${r===state.region}">${r}</button>`).join(' ');
+  $('#regionChips').onclick = e=>{const b=e.target.closest('[data-region]');if(!b)return;state.region=b.dataset.region;
+    document.querySelectorAll('[data-region]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderAll();};
+  $('#cargoSel').innerHTML = CARGOS.map(c=>`<option value="${c.id}" ${c.id===state.cargo?'selected':''}>${c.n}</option>`).join('');
+  $('#cargoSel').onchange = e=>{state.cargo=e.target.value;renderAll();};
+  document.querySelectorAll('[data-ds]').forEach(b=>b.onclick=()=>{state.dataset=b.dataset.ds;
+    document.querySelectorAll('[data-ds]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderAll();});
+}
+
+/* ---------- 4. Ranking y brecha ---------- */
+function renderSlope(){
+  const R=visRows(), box=$('#slope');
+  if(R.length<2){box.innerHTML=emptyMsg(R.length?'Con una sola provincia no hay ranking para comparar. Elegí otra región o agregá datos.':'No hay datos cargados para esta región todavía. Podés sumarlos en “Datos y supuestos”.');
+    $('#gap').innerHTML='';$('#slopeInsight').textContent='';return;}
+  const nomO=[...R].sort((a,b)=>b.nominal-a.nominal), realO=[...R].sort((a,b)=>b.real-a.real);
+  const W=Math.max(330,box.clientWidth||600), narrow=W<560, dense=R.length>10, rowH=dense?36:46, top=34, H=top+R.length*rowH, f1=dense?12.5:14, f2=dense?11:12, dy=dense?11:14;
+  const lx=narrow?128:220, rx=W-(narrow?128:220);
+  const ink=css('--ink'),muted=css('--muted'),up=css('--up'),down=css('--down');
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Comparación de ranking nominal y real">`;
+  s+=`<text x="${lx}" y="16" text-anchor="end" font-weight="700" font-size="13" fill="${muted}">Ranking nominal</text>`;
+  s+=`<text x="${rx}" y="16" font-weight="700" font-size="13" fill="${muted}">Ranking real</text>`;
+  R.forEach(p=>{
+    const i=nomO.indexOf(p), j=realO.indexOf(p), y1=top+i*rowH+rowH/2, y2=top+j*rowH+rowH/2;
+    const col=j<i?up:j>i?down:muted, w=j===i?2:3.5;
+    s+=`<line x1="${lx+8}" y1="${y1}" x2="${rx-8}" y2="${y2}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
+    s+=`<circle cx="${lx+8}" cy="${y1}" r="5" fill="${css('--nominal')}"/><circle cx="${rx-8}" cy="${y2}" r="5" fill="${css('--real')}"/>`;
+    const name=narrow?p.c:p.n;
+    s+=`<text x="${lx-6}" y="${y1-2}" text-anchor="end" font-size="${f1}" font-weight="650" fill="${ink}">${i+1}. ${name}</text>`;
+    s+=`<text x="${lx-6}" y="${y1+dy}" text-anchor="end" font-size="${f2}" fill="${muted}">${fmtM(p.nominal)}</text>`;
+    s+=`<text x="${rx+6}" y="${y2-2}" font-size="${f1}" font-weight="650" fill="${ink}">${j+1}. ${name}</text>`;
+    s+=`<text x="${rx+6}" y="${y2+dy}" font-size="${f2}" fill="${muted}">${fmtM(p.real)}</text>`;
+  });
+  box.innerHTML=s+'</svg>';
+
+  const gN=nomO[0].nominal/nomO.at(-1).nominal, gR=realO[0].real/realO.at(-1).real;
+  $('#gap').innerHTML=`
+    <div class="g"><div class="big">${num(gN)}×</div><small>Brecha nominal: ${nomO[0].c} cobra ${num(gN)} veces lo que ${nomO.at(-1).c}.</small></div>
+    <div class="g r"><div class="big">${num(gR)}×</div><small>Brecha real: ${realO[0].c} rinde ${num(gR)} veces lo que ${realO.at(-1).c}.</small></div>`;
+
+  let best=null;R.forEach(p=>{const d=nomO.indexOf(p)-realO.indexOf(p);if(!best||d>best.d)best={p,d};});
+  let worst=null;R.forEach(p=>{const d=nomO.indexOf(p)-realO.indexOf(p);if(!worst||d<worst.d)worst={p,d};});
+  const dg=gR/gN-1;
+  let t = Math.abs(dg)<0.005 ? 'Estas provincias comparten el mismo índice de costo de vida, por eso la brecha no cambia al ajustar. ' : dg<0 ? `Al ajustar por costo de vida la desigualdad se achica ${pct(-dg,0).replace('+','')}. ` : `Al ajustar por costo de vida la desigualdad crece ${pct(dg,0)}. `;
+  if(best.d>0) t+=`${best.p.n} es la que más gana: pasa del puesto ${nomO.indexOf(best.p)+1} al ${realO.indexOf(best.p)+1} porque su costo de vida es ${best.p.icv<1?'más bajo':'más alto'} que el del Gran Buenos Aires (índice ${num(best.p.icv)}). `;
+  if(worst.d<0) t+=`${worst.p.n} es la que más pierde: del puesto ${nomO.indexOf(worst.p)+1} baja al ${realO.indexOf(worst.p)+1} (índice ${num(worst.p.icv)}).`;
+  if(best.d<=0&&worst.d>=0) t+='El orden no cambia: en esta selección, cobrar más también significa poder comprar más.';
+  $('#slopeInsight').textContent=t;
+}
+
+/* ---------- 1. Barras ---------- */
+function renderBars(){
+  const R=visRows(), box=$('#bars');
+  $('#legSim').hidden=!simActive();
+  if(!R.length){box.innerHTML=emptyMsg('No hay provincias con datos en esta región.');return;}
+  R.sort((a,b)=>b[state.sort]-a[state.sort]);
+  const W=Math.max(320,box.clientWidth||520), lab=W<480?92:118, right=86, rowH=simActive()?62:52, top=22, H=top+R.length*rowH+4;
+  const maxV=Math.max(...R.map(r=>Math.max(r.nominal,r.nomSim,r.real,r.realSim)));
+  const step=niceStep(maxV/4), maxA=Math.ceil(maxV/step)*step, sx=v=>lab+(v/maxA)*(W-lab-right);
+  const ink=css('--ink'),muted=css('--muted'),line=css('--line'),cN=css('--nominal'),cR=css('--real');
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Salario nominal y real por provincia">`;
+  for(let v=0;v<=maxA+1;v+=step){const x=sx(v);
+    s+=`<line x1="${x}" y1="${top-4}" x2="${x}" y2="${H}" stroke="${line}"/>`;
+    s+=`<text x="${x}" y="12" text-anchor="middle" font-size="11" fill="${muted}">${v===0?'0':fmtM(v).replace('$ ','')}</text>`;}
+  R.forEach((r,i)=>{
+    const y=top+i*rowH+6;
+    s+=`<text x="${lab-10}" y="${y+20}" text-anchor="end" font-size="14" font-weight="650" fill="${ink}">${r.c}</text>`;
+    s+=`<rect x="${lab}" y="${y}" width="${sx(r.nominal)-lab}" height="15" rx="3" fill="${cN}"><title>Nominal ${fmt(r.nominal)}</title></rect>`;
+    s+=`<text x="${sx(r.nominal)+6}" y="${y+12}" font-size="12" fill="${muted}">${fmtM(r.nominal)}</text>`;
+    s+=`<rect x="${lab}" y="${y+19}" width="${sx(r.real)-lab}" height="15" rx="3" fill="${cR}"><title>Real ${fmt(r.real)}</title></rect>`;
+    s+=`<text x="${sx(r.real)+6}" y="${y+31}" font-size="12" font-weight="600" fill="${ink}">${fmtM(r.real)}</text>`;
+    if(simActive()){
+      s+=`<rect x="${lab}" y="${y+38}" width="${Math.max(1,sx(r.realSim)-lab)}" height="9" rx="2" fill="none" stroke="${cR}" stroke-width="1.5" stroke-dasharray="4 3"><title>Real simulado ${fmt(r.realSim)}</title></rect>`;
+      s+=`<text x="${sx(r.realSim)+6}" y="${y+47}" font-size="11" fill="${muted}">${fmtM(r.realSim)}</text>`;
+    }
+  });
+  box.innerHTML=s+'</svg>';
+}
+
+/* ---------- 2. Mapa de calor ---------- */
+function mix(a,b,t){const h=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16));const A=h(a),B=h(b);
+  return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');}
+function heat(ratio){const t=Math.max(-1,Math.min(1,(ratio-1)/0.4));
+  return {fill:t<0?mix('#EEF2F6','#D98A2B',-t):mix('#EEF2F6','#1E4E8C',t),dark:Math.abs(t)>0.5};}
+function renderMap(){
+  const all=allRows(), map=Object.fromEntries(all.map(r=>[r.id,r])), avg=avgReal(all), sim=state.mapMode==='sim';
+  const T=58, cols=6, rows=10, W=cols*T, H=rows*T;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="group" aria-label="Mapa esquemático de Argentina">`;
+  s+=`<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="${css('--line')}" stroke-width="2"/></pattern></defs>`;
+  PROV.forEach(p=>{
+    const r=map[p.id], x=p.x*T+3, y=p.y*T+3, w=T-6, vis=inRegion(p);
+    let fill='url(#hatch)', txt=css('--muted'), val='s/d';
+    if(r){const ratio=(sim?r.realSim:r.real)/avg, h=heat(ratio);fill=h.fill;txt=h.dark?'#FFFFFF':'#16243A';val=pct(ratio-1,0);}
+    const selStroke=state.sel===p.id?css('--ink'):'none';
+    s+=`<g class="tile" tabindex="0" role="button" data-id="${p.id}" aria-label="${p.n}${r?', '+val+' respecto del promedio':', sin datos'}" opacity="${vis?1:0.25}"><title>${p.n}${r?' · real '+fmt(sim?r.realSim:r.real):' · sin datos'}</title>`;
+    s+=`<rect x="${x}" y="${y}" width="${w}" height="${w}" rx="8" fill="${r?fill:css('--nodata')}" stroke="${selStroke}" stroke-width="3"/>`;
+    if(!r) s+=`<rect x="${x}" y="${y}" width="${w}" height="${w}" rx="8" fill="${fill}"/>`;
+    s+=`<text x="${x+w/2}" y="${y+22}" text-anchor="middle" font-size="12" font-weight="750" fill="${txt}">${p.id}</text>`;
+    s+=`<text x="${x+w/2}" y="${y+39}" text-anchor="middle" font-size="11" fill="${txt}">${val}</text></g>`;
+  });
+  $('#map').innerHTML=s+'</svg>';
+  $('#map').querySelectorAll('.tile').forEach(g=>{
+    const pick=()=>{state.sel=g.dataset.id;renderMap();};
+    g.onclick=pick; g.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}};
+  });
+  renderInfo(map,avg);
+}
+function renderInfo(map,avg){
+  const box=$('#mapInfo');
+  if(!state.sel){box.innerHTML=`<p class="explica" style="margin:0">Promedio real de las 24 jurisdicciones: <strong>${fmt(avg)}</strong>. Elegí una casilla para ver su detalle.</p>`;return;}
+  const p=byId[state.sel], r=map[state.sel];
+  if(!r){box.innerHTML=`<h3 style="margin-top:0">${p.n}</h3><p class="explica" style="margin:0">Todavía no hay cifras para esta provincia. Podés cargarlas en “Datos y supuestos”.</p>`;return;}
+  box.innerHTML=`<h3 style="margin-top:0">${p.n} <span style="color:var(--muted);font-weight:500">· ${p.r}</span></h3>
+  <dl><dt>Nominal</dt><dd>${fmt(r.nominal)}</dd><dt>Real</dt><dd>${fmt(r.real)}</dd>
+  <dt>Costo de vida</dt><dd>${num(r.icv)} (${r.src==='autor'?'índice cargado por el autor':`región ${priceRegion(p)}: ${Math.abs(r.icv-1)<0.005?'igual que GBA':r.icv>1?pct(r.icv-1,0)+' más cara que GBA':pct(r.icv-1,0).replace('-','')+' más barata que GBA'}`})</dd>
+  <dt>Frente al promedio</dt><dd>${pct(r.real/avg-1)}</dd>
+  ${simActive()?`<dt>Real simulado</dt><dd>${fmt(r.realSim)}</dd>`:''}</dl>`;
+}
+
+/* ---------- 5. Simulador ---------- */
+function buildSim(){
+  const upd=()=>{$('#outA').textContent=state.aumento+'%';$('#outP').textContent=state.inflacion+'%';renderAll();};
+  $('#rngA').oninput=e=>{state.aumento=+e.target.value;upd();};
+  $('#rngP').oninput=e=>{state.inflacion=+e.target.value;upd();};
+  $('#alcance').onchange=e=>{state.alcance=e.target.value;renderAll();};
+  $('#simReset').onclick=()=>{state.aumento=0;state.inflacion=0;state.alcance='todas';$('#rngA').value=0;$('#rngP').value=0;$('#alcance').value='todas';upd();};
+}
+function renderSim(){
+  const all=allRows(), R=all.filter(r=>r.vis), avg=avgReal(all), pi=state.inflacion/100;
+  const opts=['<option value="todas">Todas las provincias</option>'].concat(all.map(r=>`<option value="${r.id}">Sólo ${r.n}</option>`));
+  const sel=$('#alcance'); sel.innerHTML=opts.join(''); if(![...sel.options].some(o=>o.value===state.alcance))state.alcance='todas'; sel.value=state.alcance;
+  const varReal=(1+state.aumento/100)/(1+pi)-1;
+  let h;
+  if(!simActive()) h='Mové los controles para ver cómo cambia el poder adquisitivo.';
+  else if(Math.abs(varReal)<0.0005) h=`El aumento empata con la inflación: el poder adquisitivo queda igual.`;
+  else h=`Con ${state.aumento}% de aumento e inflación de ${state.inflacion}%, el poder adquisitivo ${varReal>0?'mejora':'cae'} ${pct(Math.abs(varReal)).replace('+','')}${state.alcance==='todas'?'':' en '+byId[state.alcance].n}.`;
+  if(simActive()&&state.alcance!=='todas') h+=' El resto de las provincias sólo sufre la inflación.';
+  $('#simHeadline').textContent=h;
+  if(!R.length){$('#simTable').innerHTML=`<tr><td>${emptyMsg('No hay provincias con datos en esta región.')}</td></tr>`;return;}
+  const rankOld=[...R].sort((a,b)=>b.real-a.real), rankNew=[...R].sort((a,b)=>b.realSim-a.realSim);
+  let t=`<thead><tr><th>Provincia</th><th class="num">Real hoy</th><th class="num">Real simulado</th><th class="num">Variación</th><th class="num">Puesto</th><th class="num">Para llegar al promedio</th></tr></thead><tbody>`;
+  rankNew.forEach(r=>{
+    const v=r.realSim/r.real-1, o=rankOld.indexOf(r)+1, n=rankNew.indexOf(r)+1;
+    const need=(avg*r.icv*(1+pi))/r.nominal-1;
+    t+=`<tr><td>${r.n}</td><td class="num">${fmt(r.real)}</td><td class="num">${fmt(r.realSim)}</td>
+    <td class="num ${v>0.0005?'pos':v<-0.0005?'neg':''}">${pct(v)}</td>
+    <td class="num">${n}°${n!==o?` <span class="${n<o?'pos':'neg'}">(${n<o?'▲':'▼'}${Math.abs(o-n)})</span>`:''}</td>
+    <td class="num">${need<=0?'ya supera':pct(need)}</td></tr>`;
+  });
+  $('#simTable').innerHTML=t+'</tbody>';
+}
+
+/* ---------- Datos y supuestos ---------- */
+function renderData(){
+  const ids=PROV.filter(p=>state.data[p.id]).map(p=>p.id);
+  let t=`<thead><tr><th>Provincia</th><th>Región de precios (INDEC)</th><th class="num">Nominal MG10</th><th class="num">Real (pesos GBA)</th><th class="num">Índice de costo de vida</th><th></th></tr></thead><tbody>`;
+  ids.forEach(id=>{const d=state.data[id],p=byId[id];
+    t+=`<tr><td>${p.n}</td><td>${priceRegion(p)}</td>
+    <td class="num"><input type="number" min="1" data-id="${id}" data-f="nominal" value="${d.nominal}" aria-label="Nominal ${p.n}"></td>
+    <td class="num"><input type="number" min="1" data-id="${id}" data-f="real" value="${d.real}" aria-label="Real ${p.n}"></td>
+    <td class="num">${num(d.nominal/d.real)}</td>
+    <td><button class="linkbtn" data-del="${id}">Quitar</button></td></tr>`;});
+  $('#dataTable').innerHTML=t+'</tbody>';
+  $('#dataTable').querySelectorAll('input').forEach(inp=>inp.onchange=()=>{const v=+inp.value;if(v>0){state.data[inp.dataset.id][inp.dataset.f]=v;save();renderAll();}});
+  $('#dataTable').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{delete state.data[b.dataset.del];save();renderAll();});
+  $('#addSel').innerHTML=PROV.filter(p=>!state.data[p.id]).map(p=>`<option value="${p.id}">${p.n}</option>`).join('');
+}
+$('#addBtn').onclick=()=>{
+  const id=$('#addSel').value, n=+$('#addNom').value, r=+$('#addReal').value;
+  if(!id||!(n>0)||!(r>0)){$('#addNom').focus();return;}
+  state.data[id]={nominal:n,real:r};$('#addNom').value='';$('#addReal').value='';save();renderAll();
+};
+$('#resetAll').onclick=()=>{state.data=JSON.parse(JSON.stringify(DEFAULT_DATA));save();renderAll();};
+
+/* ---------- Controles generales ---------- */
+document.querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{state.sort=b.dataset.sort;
+  document.querySelectorAll('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderBars();});
+document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>{state.mapMode=b.dataset.map;
+  document.querySelectorAll('[data-map]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMap();});
+$('#btnPres').onclick=e=>{const on=document.body.classList.toggle('pres');e.target.setAttribute('aria-pressed',on);renderAll();};
+$('#btnTheme').onclick=e=>{const root=document.documentElement;
+  const dark=root.getAttribute('data-theme')==='dark'||(!root.hasAttribute('data-theme')&&matchMedia('(prefers-color-scheme: dark)').matches);
+  root.setAttribute('data-theme',dark?'light':'dark');e.target.textContent=dark?'Tema oscuro':'Tema claro';renderAll();};
+(function initThemeLabel(){if(matchMedia('(prefers-color-scheme: dark)').matches)$('#btnTheme').textContent='Tema claro';})();
+
+
+/* ---------- Serie histórica ---------- */
+/* Salario bruto MG10 (financiamiento jurisdiccional y nacional). Dic-23 a jun-24: informe dic-2024; sep-24 a sep-25: informe sep-2025 (revisado); jun-26: informe jun-2026 */
+const H_DATES=['2023-12','2024-03','2024-06','2024-09','2024-12','2025-03','2025-06','2025-09','2026-06'];
+const H_SERIES={
+ BUE:[362116,555307,622914,725943,781766,852381,908452,986528,1183892],CAT:[293408,407034,501874,552334,601406,663920,717039,833251,1043648],
+ CHA:[337109,498619,755778,896013,1004644,1108275,1203215,1203215,1285067],CHU:[301327,429736,576304,718941,800501,859492,929993,981119,1217456],
+ CABA:[432310,618902,746768,831570,920103,966496,1049296,1108761,1394542],CBA:[426180,579096,704285,861059,949404,1054408,1149452,1186344,1612064],
+ COR:[369099,447299,589633,726766,930100,936100,936100,1185700,1468200],ERI:[337609,449461,522364,694362,733484,826788,884604,925288,1073057],
+ FOR:[283112,321390,600331,540452,656246,793690,968507,968507,1208337],JUJ:[333950,380813,441582,678785,800980,818485,849993,905651,1126146],
+ LPA:[500219,513771,590829,690093,1206429,965051,1032488,1108886,1434458],LRI:[280365,349098,447786,601786,801848,817048,817048,919254,1039880],
+ MZA:[303055,361433,482728,728797,683345,731254,773034,827122,935450],MIS:[295168,336109,555590,623003,664834,742406,781035,828378,988279],
+ NQN:[443308,709052,824162,1252366,1680433,1691343,1878666,2001907,2521570],RNG:[327690,556856,773658,1067132,1067132,1160744,1193076,1287478,1495300],
+ SAL:[426652,623587,753727,883867,985264,1014822,1073938,1113349,1299400],SJU:[364922,547841,633417,717644,819147,899831,984990,1078865,1418351],
+ SLU:[528112,569412,709813,763496,812944,902225,991505,1034360,1167209],SCR:[437751,711831,877623,1105623,1184371,1330378,1505336,1636123,1872715],
+ SFE:[432862,621337,727253,800144,893363,936116,1007937,1046721,1404667],SDE:[380406,326771,516411,516411,1016411,918781,918781,918781,1893191],
+ TDF:[343570,543072,710957,1085462,1214072,1295191,1429307,1493353,1612133],TUC:[310806,457447,505326,671445,842773,749805,785310,864021,1135994]};
+/* Fechas en que el informe aclara que el salario incluye sumas extraordinarias */
+const H_EXTRA={'2024-09':['CBA','ERI','LRI'],'2024-12':['COR','JUJ','LPA','LRI','NQN','SDE','TUC']};
+/* IPC nacional INDEC, variación mensual % */
+const IPC_M={2024:[20.6,13.2,11,8.8,4.2,4.6,4.0,4.2,3.5,2.7,2.4,2.7],2025:[2.2,2.4,3.7,2.8,1.5,1.6,1.9,1.9,2.1,2.3,2.5,2.8],2026:[2.9,2.9,3.4,2.6,2.1,1.9]};
+/* IPC nacional INDEC, variación diciembre contra diciembre 2017–2023 (la serie nacional empieza en dic-2016) */
+const IPC_ANUAL={2017:24.8,2018:47.6,2019:53.8,2020:36.1,2021:50.9,2022:94.8,2023:211.4};
+const IPC_OFF=(()=>{const o={'2023-12':100};let v=100;for(const y of [2024,2025,2026])IPC_M[y].forEach((m,i)=>{v*=1+m/100;o[`${y}-${String(i+1).padStart(2,'0')}`]=v;});
+  let b=100;for(let y=2023;y>=2017;y--){b/=1+IPC_ANUAL[y]/100;o[`${y-1}-12`]=b;}return o;})();
+const IPC_BASE=IPC_OFF['2026-06'];
+const HKEY='docentes2026:hist';
+const histExtra=(()=>{try{const s=JSON.parse(localStorage.getItem(HKEY));if(s&&s.nom&&s.ipc)return s;}catch(e){}return {nom:{},ipc:{}};})();
+const saveHist=()=>{try{localStorage.setItem(HKEY,JSON.stringify(histExtra));}catch(e){}};
+const hist={prov:'RNG',cargo:'MG10',ajuste:'ipc',comp:'nacional',showNom:true};
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const dLabel=d=>MES[+d.slice(5)-1]+'-'+d.slice(0,4);
+const tOf=d=>+d.slice(0,4)+(+d.slice(5)-1)/12;
+const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+const ipcAt=d=>IPC_OFF[d]??histExtra.ipc[d];
+function histDates(){
+  const set=new Set(H_DATES);
+  Object.values(histExtra.nom).forEach(o=>Object.keys(o).forEach(d=>set.add(d)));
+  return [...set].filter(d=>ipcAt(d)!=null).sort();
+}
+function nomH(p,d,cargo=hist.cargo){
+  const i=H_DATES.indexOf(d);
+  const v=i>=0?H_SERIES[p.id][i]:(histExtra.nom[p.id]||{})[d];
+  return v==null?null:v*ratioOf(p.id,cargo);
+}
+function icvH(p){const au=state.dataset==='autor'&&AUTHOR[p.id];return au?au.icv:icvOf(p);}
+function realH(p,d){const n=nomH(p,d);if(n==null)return null;let v=n*IPC_BASE/ipcAt(d);if(hist.ajuste==='col')v/=icvH(p);return v;}
+
+function buildHist(){
+  $('#hProv').innerHTML=PROV.map(p=>`<option value="${p.id}">${p.n}</option>`).join('');$('#hProv').value=hist.prov;
+  $('#hCargo').innerHTML=CARGOS.map(c=>`<option value="${c.id}">${c.n}</option>`).join('');$('#hCargo').value=hist.cargo;
+  $('#hProv').onchange=e=>{hist.prov=e.target.value;renderHist();};
+  $('#hCargo').onchange=e=>{hist.cargo=e.target.value;renderHist();};
+  $('#hNom').onchange=e=>{hist.showNom=e.target.checked;renderHist();};
+  const grp=(attr,key)=>document.querySelectorAll(`[${attr}]`).forEach(b=>b.onclick=()=>{hist[key]=b.getAttribute(attr);
+    document.querySelectorAll(`[${attr}]`).forEach(x=>x.setAttribute('aria-pressed',x===b));renderHist();});
+  grp('data-haj','ajuste');grp('data-hcomp','comp');
+  $('#hImpBtn').onclick=importHist;
+  $('#hClear').onclick=()=>{histExtra.nom={};histExtra.ipc={};saveHist();$('#hMsg').textContent='Datos importados borrados.';renderHist();};
+}
+function parseNum(x){x=x.trim().replace(/\s|\$/g,'');
+  if(x.includes(',')&&x.includes('.'))x=x.replace(/\./g,'').replace(',','.');else if(x.includes(','))x=x.replace(',','.');
+  else if(/^\d{1,3}(\.\d{3})+$/.test(x))x=x.replace(/\./g,'');return parseFloat(x);}
+const norm=t=>t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+function importHist(){
+  const rows=$('#hText').value.split(/\n/).map(l=>l.trim()).filter(Boolean);
+  let ok=0,bad=0;const ipcRaw={},nom={};
+  rows.forEach(l=>{const parts=l.includes(';')?l.split(';'):l.includes('\t')?l.split('\t'):l.split(',');
+    if(parts.length<3){bad++;return;}
+    const d=parts[0].trim(),code=parts[1].trim(),v=parseNum(parts.slice(2).join(','));
+    if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(d)||!(v>0)){bad++;return;}
+    if(code.toUpperCase()==='IPC'){ipcRaw[d]=v;ok++;return;}
+    const p=PROV.find(q=>q.id===code.toUpperCase()||norm(q.n)===norm(code)||norm(q.c)===norm(code));
+    if(!p){bad++;return;}(nom[p.id]=nom[p.id]||{})[d]=v;ok++;});
+  if(Object.keys(ipcRaw).length){
+    if(!ipcRaw['2023-12']){$('#hMsg').textContent='Falta el IPC de 2023-12 para empalmar la serie. No se importó nada.';return;}
+    const f=100/ipcRaw['2023-12'];Object.entries(ipcRaw).forEach(([d,v])=>{if(IPC_OFF[d]==null)histExtra.ipc[d]=v*f;});
+  }
+  Object.entries(nom).forEach(([id,o])=>{histExtra.nom[id]=Object.assign(histExtra.nom[id]||{},o);});
+  saveHist();
+  const sinIpc=Object.values(nom).flatMap(o=>Object.keys(o)).filter(d=>ipcAt(d)==null).length;
+  $('#hMsg').textContent=`${ok} filas importadas${bad?`, ${bad} ignoradas por formato`:''}${sinIpc?`. ${sinIpc} datos no se muestran porque falta el IPC de esa fecha`:''}.`;
+  renderHist();
+}
+
+function renderHist(){
+  const p=byId[hist.prov], dates=histDates(), box=$('#histChart');
+  const first=dates[0];
+  $('#histNotice').innerHTML = tOf(first)>2011
+    ? `Serie oficial cargada: <strong>${dLabel(first)} a jun-2026</strong> (trimestral, sin dic-2025 ni mar-2026). El IPC del INDEC ya está cargado desde dic-2016: para completar 2016–2023 alcanza con importar los salarios de diciembre de cada año desde “Cargar años anteriores”.`
+    : `Serie desde ${dLabel(first)}: los datos anteriores a dic-2023 fueron importados por el usuario.`;
+  const S=dates.map(d=>({d,t:tOf(d),nom:nomH(p,d),real:realH(p,d)})).filter(x=>x.nom!=null);
+  const group=hist.comp==='nacional'?PROV:PROV.filter(q=>q.r===p.r);
+  const compName=hist.comp==='nacional'?'Promedio nacional':'Promedio '+p.r;
+  const C=dates.map(d=>{const r=group.map(q=>realH(q,d)).filter(v=>v!=null),n=group.map(q=>nomH(q,d)).filter(v=>v!=null);
+    return r.length?{d,t:tOf(d),real:mean(r),nom:mean(n)}:null;}).filter(Boolean);
+  const cN=css('--nominal'),cR=css('--real'),muted=css('--muted'),line=css('--line'),ink=css('--ink');
+  $('#hLegend').innerHTML=`<span><i style="background:${cR}"></i>${p.c}: real</span>`+
+    (hist.showNom?`<span><i style="background:transparent;border-top:3px dashed ${cN};height:0"></i>${p.c}: nominal</span>`:'')+
+    `<span><i style="background:${muted}"></i>${compName}: real</span>`+
+    (hist.showNom?`<span><i style="background:transparent;border-top:2px dashed ${muted};height:0"></i>${compName}: nominal</span>`:'');
+  if(S.length<2){box.innerHTML=emptyMsg('No hay suficientes datos para esta provincia.');$('#hKpis').innerHTML='';$('#hSummary').innerHTML='';return;}
+  const W=Math.max(330,box.clientWidth||700), narrow=W<560, H=narrow?300:360, L=narrow?48:62, R=narrow?88:120, T=18, B=34;
+  const t0=Math.min(S[0].t,C[0].t), t1=Math.max(S.at(-1).t,C.at(-1).t);
+  const vals=[...S.map(x=>x.real),...C.map(x=>x.real),...(hist.showNom?[...S.map(x=>x.nom),...C.map(x=>x.nom)]:[])];
+  const step=niceStep(Math.max(...vals)/4), maxY=Math.ceil(Math.max(...vals)*1.05/step)*step;
+  const sx=t=>L+(t-t0)/(t1-t0||1)*(W-L-R), sy=v=>T+(1-v/maxY)*(H-T-B);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolución del salario nominal y real de ${p.n}">`;
+  for(let v=0;v<=maxY+1;v+=step){s+=`<line x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}" stroke="${line}"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end" font-size="11" fill="${muted}">${v?fmtM(v).replace('$ ',''):'0'}</text>`;}
+  const span=t1-t0, yStep=span>8?2:1;
+  for(let y=Math.ceil(t0);y<=t1;y+=yStep){s+=`<line x1="${sx(y)}" x2="${sx(y)}" y1="${T}" y2="${H-B}" stroke="${line}" stroke-dasharray="2 4"/><text x="${sx(y)}" y="${H-B+16}" text-anchor="middle" font-size="11" fill="${muted}">${y}</text>`;}
+  const path=(arr,k,col,w,dash,op=1)=>{let out='';for(let i=1;i<arr.length;i++){const gap=(arr[i].t-arr[i-1].t)>0.4;
+    out+=`<line x1="${sx(arr[i-1].t)}" y1="${sy(arr[i-1][k])}" x2="${sx(arr[i].t)}" y2="${sy(arr[i][k])}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" ${dash?`stroke-dasharray="${dash}"`:''} opacity="${gap?op*0.45:op}"/>`;}return out;};
+  if(hist.showNom){s+=path(C,'nom',muted,1.5,'5 4',.8);s+=path(S,'nom',cN,2.5,'7 5');}
+  s+=`<polygon points="${S.map(x=>sx(x.t)+','+sy(x.real)).join(' ')} ${sx(S.at(-1).t)},${sy(0)} ${sx(S[0].t)},${sy(0)}" fill="${cR}" opacity="0.08"/>`;
+  s+=path(C,'real',muted,2,'',.85);s+=path(S,'real',cR,3.2,'');
+  S.forEach(x=>{s+=`<circle cx="${sx(x.t)}" cy="${sy(x.real)}" r="4" fill="${cR}"><title>${dLabel(x.d)} · real ${fmt(x.real)} · nominal ${fmt(x.nom)}</title></circle>`;
+    if(hist.showNom)s+=`<circle cx="${sx(x.t)}" cy="${sy(x.nom)}" r="3" fill="${cN}"><title>${dLabel(x.d)} · nominal ${fmt(x.nom)}</title></circle>`;});
+  const endLbl=(x,y,txt,col,dy=0)=>`<text x="${x+8}" y="${y+4+dy}" font-size="${narrow?11:12}" font-weight="650" fill="${col}">${txt}</text>`;
+  const lr=S.at(-1), lc=C.at(-1);let d1=0,d2=0;if(Math.abs(sy(lr.real)-sy(lc.real))<14){d1=sy(lr.real)<sy(lc.real)?-7:7;d2=-d1;}
+  s+=endLbl(sx(lr.t),sy(lr.real),fmtM(lr.real),cR,d1)+endLbl(sx(lc.t),sy(lc.real),narrow?'Prom.':compName.replace('Promedio','Prom.'),muted,d2);
+  box.innerHTML=s+'</svg>';
+
+  // Tendencia y KPIs
+  const ch=lr.real/S[0].real-1, cls=ch>0.05?'up':ch<-0.05?'down':'flat';
+  const lbl={up:'Crecimiento real',flat:'Estancamiento',down:'Pérdida de poder adquisitivo'}[cls];
+  const minP=S.reduce((a,b)=>b.real<a.real?b:a), gapComp=lr.real/lc.real-1, cStart=C.find(x=>x.d===S[0].d)||C[0], chC=lc.real/cStart.real-1;
+  $('#hKpis').innerHTML=`<div>Tendencia ${dLabel(S[0].d)} → ${dLabel(lr.d)}<b><span class="trend ${cls}">${lbl}</span></b></div>
+   <div>Variación real<b class="${ch>0.005?'pos':ch<-0.005?'neg':''}">${pct(ch)}</b></div>
+   <div>Variación nominal<b>${pct(lr.nom/S[0].nom-1,0)}</b></div>
+   <div>Punto más bajo (real)<b>${dLabel(minP.d)}</b>${fmtM(minP.real)}</div>
+   <div>Frente al ${compName.replace('Promedio','promedio')}<b class="${gapComp>0?'pos':'neg'}">${pct(gapComp)}</b>El promedio varió ${pct(chC)}</div>`;
+
+  // Resumen automático
+  const steps=[];for(let i=1;i<S.length;i++)steps.push({from:S[i-1],to:S[i],ch:S[i].real/S[i-1].real-1});
+  const byDecade=(S.at(-1).t-S[0].t)>=8;
+  const key=x=>byDecade?Math.floor(+x.to.d.slice(0,4)/10)*10:+x.to.d.slice(0,4);
+  const buckets={};steps.forEach(x=>{const k=key(x);buckets[k]=(buckets[k]??1)*(1+x.ch);});
+  const ks=Object.keys(buckets);const unit=byDecade?'década':'año';
+  const name=k=>byDecade?`década de ${k}`:k;
+  let best=ks[0],worst=ks[0];ks.forEach(k=>{if(buckets[k]>buckets[best])best=k;if(buckets[k]<buckets[worst])worst=k;});
+  const abrupt=steps.filter(x=>Math.abs(x.ch)>=0.15);
+  const extraFlag=x=>(H_EXTRA[x.to.d]||[]).includes(p.id)?' (el dato incluye una suma extraordinaria)':(H_EXTRA[x.from.d]||[]).includes(p.id)?' (el dato anterior incluía una suma extraordinaria)':'';
+  $('#hSummary').innerHTML=`
+   <div><h3>Mejor ${unit}</h3>${ks.length<2?'Hay un solo período con datos.':`<strong>${name(best)}</strong>: el salario real varió ${pct(buckets[best]-1)}.`}</div>
+   <div><h3>Peor ${unit}</h3>${ks.length<2?'Hay un solo período con datos.':`<strong>${name(worst)}</strong>: el salario real varió ${pct(buckets[worst]-1)}.`}</div>
+   <div><h3>Saltos y caídas abruptas</h3>${abrupt.length?`<ul>${abrupt.map(x=>`<li>${dLabel(x.from.d)} → ${dLabel(x.to.d)}: <span class="${x.ch>0?'pos':'neg'}">${pct(x.ch,0)}</span>${extraFlag(x)}</li>`).join('')}</ul>`:'No hubo cambios reales de ±15% o más entre datos consecutivos.'}</div>`+
+   (byDecade?'':`<p class="explica" style="grid-column:1/-1;margin:0;font-size:.9rem">Con la serie actual el resumen se calcula por año; al importar datos desde 2016 pasa a compararse la década de 2010 con la de 2020.</p>`);
+}
+
+function renderGlance(){
+  const R=visRows(), g=$('#glance');
+  if(!R.length){g.innerHTML='';return;}
+  const top=R.reduce((a,b)=>b.real>a.real?b:a), low=R.reduce((a,b)=>b.real<a.real?b:a);
+  g.innerHTML=`<div><small>Nominal promedio</small><b>${fmtM(mean(R.map(r=>r.nominal)))}</b><span>${R.length} jurisdicciones · ${state.cargo}</span></div>
+  <div><small>Real promedio</small><b>${fmtM(avgReal(R))}</b><span>en pesos del Gran Buenos Aires</span></div>
+  <div><small>Mayor poder de compra</small><b>${top.c}</b><span>${fmtM(top.real)}</span></div>
+  <div><small>Menor poder de compra</small><b>${low.c}</b><span>${fmtM(low.real)}</span></div>`;
+}
+function renderAll(){renderGlance();renderSlope();renderBars();renderMap();renderSim();renderData();renderHist();}
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(renderAll,150);});
+buildFilters();buildSim();buildHist();renderAll();
+})();
+</script>
+</body>
+</html>
